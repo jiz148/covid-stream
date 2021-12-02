@@ -133,4 +133,4 @@ dmypy.json
 .idea/
 
 # db
-db/
+db/large_data

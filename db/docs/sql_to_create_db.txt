@@ -1,0 +1,32 @@
+CREATE TABLE cases
+(
+  case_month VARCHAR(20) DEFAULT NULL,
+  res_county VARCHAR(20) DEFAULT NULL,
+  age_group VARCHAR(50) DEFAULT NULL,
+  sex VARCHAR(50) DEFAULT NULL,
+  race VARCHAR(50) DEFAULT NULL,
+  ethnicity VARCHAR(50) DEFAULT NULL,
+  case_positive_specimen_interval INT DEFAULT NULL,
+  case_onset_interval INT DEFAULT NULL,
+  process VARCHAR(50) DEFAULT NULL,
+  exposure_yn VARCHAR(20) DEFAULT NULL,
+  current_status VARCHAR(100) DEFAULT NULL,
+  symptom_status VARCHAR(100) DEFAULT NULL,
+  hosp_yn VARCHAR(50) DEFAULT NULL,
+  icu_yn VARCHAR(50) DEFAULT NULL,
+  death_yn VARCHAR(50) DEFAULT NULL,
+  underlying_conditions_yn VARCHAR(50) DEFAULT NULL,
+  case_id INT NOT NULL AUTO_INCREMENT,
+  res_state CHAR(2) DEFAULT NULL,
+  PRIMARY KEY (case_id)
+);
+
+LOAD DATA LOCAL INFILE "D:\\huge_projects\\covid-stream\\db\\COVID-19_Case_Surveillance_Public_Use_Data_with_Geography.csv" 
+INTO TABLE covid_19.cases
+FIELDS TERMINATED BY ','  
+OPTIONALLY ENCLOSED BY '"'
+LINES TERMINATED BY '\r\n'
+IGNORE 1 LINES 
+    (case_month, res_state, @state_fips_code, res_county, @county_fips_code, age_group, sex, race, ethnicity, @case_positive_specimen_interval, @case_onset_interval, process, exposure_yn, current_status, symptom_status, hosp_yn, icu_yn, death_yn, underlying_conditions_yn)
+    set case_positive_specimen_interval=if(@case_positive_specimen_interval is null, NULL, @case_positive_specimen_interval),
+    case_onset_interval=if(@case_onset_interval is null, NULL, @case_onset_interval);
