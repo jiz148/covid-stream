@@ -1,12 +1,16 @@
 """
 Tools for performing operations on MySQL database
 """
+import mysql.connector
+
+
 
 
 class MysqlDbms:
 
     def __init__(self, endpoint):
         self.endpoint = endpoint
+
 
     def add(self, col_to_val=None):
         """
@@ -45,3 +49,13 @@ class MysqlDbms:
         if col_to_val is None:
             col_to_val = {}
         pass
+
+
+if __name__ == "__main__":
+    db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="oookkk",
+        database="mydatabase"
+    )
+    
