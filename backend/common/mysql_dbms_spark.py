@@ -1,25 +1,40 @@
 """
 Tools for performing operations on MySQL database
 """
-import mysql.connector
-
-
+import pyodbc
 
 
 class MysqlDbms:
 
-    def __init__(self, endpoint):
+    def __init__(self, endpoint, db, table, username, password):
         self.endpoint = endpoint
+        self.db = db
+        self.table = table
+        # pyodbc connection string
+        driver = "{Amazon Redshift (x64)}"
+        self.conn = pyodbc.connect("Driver={}; "
+                              "Server={}; "
+                              "Database={}; "
+                              "UID={}; "
+                              "PWD={}; "
+                              "Port=5439".format(driver, self.endpoint, self.db, username, password))
+        self.cursor = self.conn.cursor()
 
-
-    def add(self, col_to_val=None):
+    def add(self, col_to_val):
         """
         @param col_to_val:  dict of column name to value
         @return: <boolean> success
         """
-
-        if col_to_val is None:
-            col_to_val = {}
+        cols_str = str(tuple(col_to_val.keys()))
+        vals_str = str(tuple(col_to_val.values()))
+        sql = """INSERT INTO {}.{}{} VALUES {}""".format(self.db, self.table, cols_str, vals_str)
+        try:
+            self.cursor.execute(sql)
+            self.db.commit()
+            return True
+        except:
+            self.db.rollback()
+            return False
         pass
 
     def delete(self, index):
@@ -36,7 +51,11 @@ class MysqlDbms:
         @return: <boolean> success
                  <dict> result
         """
-
+        try:
+            self.cursor.execute(query_str)
+            return True, self.cursor.fetchall()
+        except:
+            return False, None
         pass
 
     def update(self, db_index, col_to_val=None):
@@ -52,10 +71,9 @@ class MysqlDbms:
 
 
 if __name__ == "__main__":
-    db = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="oookkk",
-        database="mydatabase"
-    )
-    
+    dbms = MysqlDbms('redshift-cluster-1.c26kfcowhljw.us-west-1.redshift.amazonaws.com', 'covid_19', 'c_19_cases')
+    query_str = """select sex, count(*) as count from c_19_cases group by sex;"""
+    _, result = dbms.query(query_str)
+    print(result)
+    print(type(result))
+    pass
