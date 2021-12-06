@@ -9,6 +9,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 from common.mysql_dbms_spark import MysqlDbms
+from backend.kafka_utils.producer import produce
 
 application = Flask(__name__)
 # CORS
@@ -24,8 +25,6 @@ USER = os.getenv('RS_USER')
 PSWD = os.getenv('RS_PSWD')
 
 
-# connect db
-dbms = MysqlDbms(ENDPOINT, DATABASE_NAME, TABLE_NAME, USER, PSWD)
 
 # state abv
 with open('data/states_abv.json') as states_file:
@@ -39,8 +38,8 @@ def case_endpoint():
     @return:
     """
     if request.method == 'POST':
-        _add_to_db(request.form)
-        res = {}
+        _add_to_db(request.get_json())
+        res = {"success": True}
     else:
         res = _get_data_from_query()
         # print(res)
@@ -53,8 +52,9 @@ def _add_to_db(cases_data):
     @param cases_data: <json>
     @return: <boolean> success
     """
+    print(cases_data)
     for case_data in cases_data:
-        pass
+        produce(case_data)
     pass
 
 
@@ -67,11 +67,14 @@ def _get_data_from_query():
     months_before = today + relativedelta(months=-12)  # hard coded to be a year
     last_val, first_val = today.strftime('%Y-%m'), months_before.strftime('%Y-%m')
 
-    pie = _name_value_data('sex', ['Male', 'Female'])
-    thermodynamic = _name_value_data('res_state')
-    line = _line_data(first_val, last_val)
-    vertical = _xy_data('age_group')
-    crosswise = _xy_data('process')
+    # connect db
+    dbms = MysqlDbms(ENDPOINT, DATABASE_NAME, TABLE_NAME, USER, PSWD)
+
+    pie = _name_value_data(dbms, 'sex', ['Male', 'Female'])
+    thermodynamic = _name_value_data(dbms, 'res_state')
+    line = _line_data(dbms, first_val, last_val)
+    vertical = _xy_data(dbms, 'age_group')
+    crosswise = _xy_data(dbms, 'process')
 
     # for state names
     for state_dict in thermodynamic:
@@ -88,8 +91,9 @@ def _get_data_from_query():
     }
 
 
-def _name_value_data(col_name, cases=None):
+def _name_value_data(dbms, col_name, cases=None):
     """
+    @param dbms: <db> dbms object
     @param col_name: <str> name of col
     @param cases: <list> list of cases eg. ['male', 'female']
     @return: <json> data
@@ -113,8 +117,9 @@ def _name_value_data(col_name, cases=None):
     pass
 
 
-def _line_data(first_val, last_val, col_name='case_month'):
+def _line_data(dbms, first_val, last_val, col_name='case_month'):
     """
+    @param dbms: <db> dbms object
     @param first_val: <str> like '2021-12'
     @param last_val: <str> like '2021-12'
     @param col_name: <str> col name, optional
@@ -125,17 +130,18 @@ def _line_data(first_val, last_val, col_name='case_month'):
     datetime_last = datetime.strptime(last_val, '%Y-%m')
 
     _, query_result = dbms.query(query_str)
-    query_result.sort(key=lambda a: a[0])
     result = []
     for row in query_result:
         if row[0] not in IGNORE_VALS and (datetime_first <= datetime.strptime(row[0], '%Y-%m') <= datetime_last):
             result.append(list(row))
+    result.sort(key=lambda a: a[0])
     return result
     pass
 
 
-def _xy_data(col_name):
+def _xy_data(dbms, col_name):
     """
+    @param dbms: <db> dbms object
     @param col_name: <str> col name
     @return: <json> data
     """

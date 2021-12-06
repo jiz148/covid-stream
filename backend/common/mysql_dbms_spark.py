@@ -25,15 +25,18 @@ class MysqlDbms:
         @param col_to_val:  dict of column name to value
         @return: <boolean> success
         """
-        cols_str = str(tuple(col_to_val.keys()))
+        cols_str = str(tuple(col_to_val.keys())).replace("'", '')
         vals_str = str(tuple(col_to_val.values()))
-        sql = """INSERT INTO {}.{}{} VALUES {}""".format(self.db, self.table, cols_str, vals_str)
+        sql = """INSERT INTO {} {} VALUES {}""".format(self.table, cols_str, vals_str)
+        # print('sql: ', sql)
         try:
             self.cursor.execute(sql)
-            self.db.commit()
+            self.conn.commit()
             return True
-        except:
-            self.db.rollback()
+        except Exception:
+            self.conn.rollback()
+            print('error when adding to db')
+            print(Exception)
             return False
         pass
 
