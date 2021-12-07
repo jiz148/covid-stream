@@ -115,7 +115,7 @@ export default {
       // crosswise
       crosswiseTitle: "Medical Process",
       // Timer
-      refreshTime: 1000,
+      refreshTime: 5,
 
       // chart options
       pieOptions: {},
