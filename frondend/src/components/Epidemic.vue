@@ -1,44 +1,41 @@
 <template>
   <div>
-
-    <a-divider orientation="center">
-      <h1>
-        {{ mainTitle }}
-      </h1>
-    </a-divider>
-
-    <a-row :align="center" type="flex">
+    <h1 class="title">
+      {{ mainTitle }}
+    </h1>
+    <a-divider orientation="center"/>
+    <a-row :align="center" type="flex" class="content">
 
       <!-- part1 -->
-      <a-col >
+      <a-col class="leftCol">
 <!--        <a-col :flex="4">-->
         <!-- pie chart -->
         <a-card style="color: #939191" :title="pieTitle" >
-          <div id="pieChart" style="width: 500px; height: 300px"></div>
+          <div id="pieChart" style="width: 100%; min-width: 200px; height: 300px"></div>
         </a-card>
         <!-- line chart -->
         <a-card :title="lineTitle" >
-          <div id="lineChart" style="width: 500px; height: 300px"></div>
+          <div id="lineChart" style="width: 100%; min-width: 200px; height: 300px"></div>
         </a-card>
       </a-col>
 
       <!-- part2 -->
-      <a-col >
+      <a-col class="midCol">
         <!-- thermodynamic -->
         <a-card :title="thermodynamicTitle" >
-          <div id="thermodynamicChart" style="width: 600px; height: 400%"></div>
+          <div id="thermodynamicChart" style="width: 100%; min-width: 300px; height: 400%"></div>
         </a-card>
       </a-col>
 
       <!-- part3 -->
-      <a-col >
+      <a-col class="rightCol">
         <!-- vertical chart -->
         <a-card :title="verticalTitle" >
-          <div id="verticalChart" style="width: 500px; height: 300px"></div>
+          <div id="verticalChart" style="width: 100%; min-width: 200px; height: 300px"></div>
         </a-card>
         <!-- crosswise chart -->
         <a-card :title="crosswiseTitle" >
-          <div id="crosswiseChart" style="width: 500px; height: 300px"></div>
+          <div id="crosswiseChart" style="width: 100%; min-width: 200px; height: 300px"></div>
         </a-card>
       </a-col>
 
@@ -51,6 +48,7 @@
 <script>
 import service from "../utils/request";
 import postAction from "../utils/request";
+import "./main.css";
 
 
 // chart part

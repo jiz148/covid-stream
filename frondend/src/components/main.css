@@ -1,0 +1,48 @@
+.content{
+  padding: 0 20px 20px 20px;
+  margin: 0 auto
+}
+
+.leftCol{
+  width: 30%;
+  min-width: 300px;
+}
+
+.rightCol{
+  width: 30%;
+  min-width: 300px;
+}
+
+.midCol{
+  width: 40%;
+  min-width: 400px;
+}
+
+.title{
+  font-size: 2em;
+  font-weight: bold;
+  width: 100%;
+}
+
+@media screen and (max-width: 1080px) {
+  .leftCol {
+      width: 80%;
+  }
+  .rightCol {
+      width: 80%;
+  }
+  .midCol {
+      width: 80%;
+  }
+  .title{
+    font-size: 1.5em;
+    word-break: break-word;
+    white-space: normal;
+  }
+}
+
+@media screen and (min-width: 2600px) {
+  .content{
+    width: 80%;
+  }
+}

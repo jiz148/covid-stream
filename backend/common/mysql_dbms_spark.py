@@ -10,8 +10,8 @@ class MysqlDbms:
         self.endpoint = endpoint
         self.db = db
         self.table = table
-        # pyodbc connection string
-        driver = "{Amazon Redshift (x64)}"
+        # pyodbc connection str ing
+        driver = "{Amazon Redshift}"
         self.conn = pyodbc.connect("Driver={}; "
                               "Server={}; "
                               "Database={}; "
